@@ -1,6 +1,6 @@
 # PhoneHierarchyChecker
 Unity移动端Hierarchy和Inspector查看器。
 
-基于UGUI实现，方便移植其他UI系统。
+基于UGUI实现，稍加改动即可方便移植其他UI引擎系统。
 
 可以在移动端查看类似UnityEditor界面内的Hierarchy和Inspector界面，方便手机上的调试问题。
