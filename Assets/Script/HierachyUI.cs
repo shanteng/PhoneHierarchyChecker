@@ -12,15 +12,59 @@ public class HierachyUI : MonoBehaviour
     public PhoneHierachyPanel _PanelView;
     private Scene dontDestroyScene;
     private Dictionary<string, HierachyNodeItem> _sceneNodes = new Dictionary<string, HierachyNodeItem>();
-    private HierachyNodeItem _selectNodeItem;
+    private bool _isSearchMode = false;
+    public InputField _input;
+    public Button _btnSearch;
+    public Button _btnClear;
     void Awake()
     {
         _nodeTemplete.gameObject.SetActive(false);
+        this._btnSearch.onClick.AddListener(this.OnSearch);
+        this._btnClear.onClick.AddListener(this.OnClear);
     }
 
+    private void OnClear()
+    {
+        if (this._isSearchMode)
+        {
+            this.Init();
+        }
+    }
+
+    private void OnSearch()
+    {
+        string inputStr = this._input.text;
+        List<Transform> objList = new List<Transform>();
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene scenNode = SceneManager.GetSceneAt(i);
+            GameObject[] objs = scenNode.GetRootGameObjects();
+            foreach (GameObject obj in objs)
+            {
+                 MobileHierarchyUtils.GetChildRecursive(obj.transform, inputStr,ref objList);
+            }//end foreach
+        }//end for
+
+        if (objList.Count > 0)
+        {
+            this._isSearchMode = true;
+            this.BuildSearchList(objList);
+        }
+    }
+
+    private void BuildSearchList(List<Transform> objList)
+    {
+        this.DestoryAll();
+        foreach (Transform tran in objList)
+        {
+            this.AddOneNode(tran.gameObject, NodeType.Normal, this._scrollHierarchy.content.transform);
+        }
+    }
 
     public void Init()
     {
+        this._input.text = "";
+        this._isSearchMode = false;
         if (dontDestroyScene == null)
             dontDestroyScene = GetDontDestroyScene();
 
@@ -49,7 +93,7 @@ public class HierachyUI : MonoBehaviour
         }
     }
 
-    private void CreateSceneNodes()
+    private void DestoryAll()
     {
         foreach (HierachyNodeItem node in this._sceneNodes.Values)
         {
@@ -57,8 +101,12 @@ public class HierachyUI : MonoBehaviour
                 GameObject.Destroy(node.gameObject);
         }
         _sceneNodes.Clear();
+    }
 
-
+    private void CreateSceneNodes()
+    {
+        this.DestoryAll();
+        
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
             CreateSceneNode(SceneManager.GetSceneAt(i));

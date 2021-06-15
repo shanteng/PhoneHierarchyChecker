@@ -105,6 +105,9 @@ public class HierachyNodeItem : MonoBehaviour
         this._childItems.Clear();
         foreach (GameObject obj in _ChildGameobjects)
         {
+            //忽略PhoneHierachyPanel自身
+            if (obj.name.Equals(PhoneHierachyPanel.PrefabName))
+                continue;
             HierachyNodeItem item = this._AddOneCallBack.Invoke(obj, NodeType.Normal, this._childRoot);
             _childItems.Add(item);
         }

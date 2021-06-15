@@ -191,4 +191,22 @@ public static class MobileHierarchyUtils
         byte[] buffer = Guid.NewGuid().ToByteArray();
         return BitConverter.ToInt64(buffer, 0).ToString();
     }
+
+    public static void GetChildRecursive(Transform parentTF, string childName,ref List<Transform> objs)
+    {
+        //在子物体中查找名为包含childName 的子物体，如果有就返回，如果没有就开始递归 ,并且屏蔽PhoneHierachyPanel
+        if (PhoneHierachyPanel.PrefabName.Equals(parentTF.name) == false)
+        {
+            if (parentTF.name.ToLower().Contains(childName.ToLower()))
+                objs.Add(parentTF);
+            int count = parentTF.childCount;
+            for (int i = 0; i < count; i++)
+            {
+                Transform child = parentTF.GetChild(i);
+                GetChildRecursive(child, childName, ref objs);
+            }
+        }
+    }
+
+
 }
